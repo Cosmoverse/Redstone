@@ -1,0 +1,6 @@
+name: Redstone
+main: redstone\RedstoneLoader
+author: Muqsit
+version: 1.0.0
+api: 5.44.3
+load: STARTUP
