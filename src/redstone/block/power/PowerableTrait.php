@@ -22,11 +22,13 @@ trait PowerableTrait{
 
 	public function recalculatePowerState() : void{
 		$power = 0;
+		$blocks = [];
 
 		if(!$this->requires_strong_power){
 			foreach(Facing::ALL as $side){
 				if($this->acceptsPowerFromSide($side)){
 					$block = HelperUtils::getBlockAtSide($this->position, $side);
+					$blocks[$side] = $block;
 					if($block instanceof PowerSource && $block->canPower(Facing::opposite($side))){
 						$block_power = $block->getOutputPowerLevel();
 						if($block_power > $power){
@@ -47,7 +49,7 @@ trait PowerableTrait{
 			}else{
 				foreach(Facing::ALL as $side){
 					if($this->acceptsPowerFromSide($side)){
-						$block = HelperUtils::getBlockAtSide($this->position, $side);
+						$block = $blocks[$side] ?? HelperUtils::getBlockAtSide($this->position, $side);
 						if($world->isStronglyPowered($block, $opposite_side = Facing::opposite($side), $opposite_side)){
 							$power = 15;
 							break;
