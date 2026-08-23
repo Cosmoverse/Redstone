@@ -101,10 +101,11 @@ class RedstoneRepeater extends VanillaRedstoneRepeater implements ToggleablePowe
 			$world->scheduleWaitableUpdate($this, RedstoneWorld::redstoneTicks($this->delay)); // corner case. override=false is important
 			return;
 		}
-		if(($this->recalculatePower($world) > 0) === $this->powered){
+		$powered = $this->recalculatePower($world) > 0;
+		if($powered === $this->powered){
 			return;
 		}
-		$world->setExtraDataAt($this->position->x, $this->position->y, $this->position->z, new RedstoneRepeaterBlockData($this->recalculatePower($world) > 0 ? RedstoneRepeaterBlockData::OPERATION_SWITCH_ON : RedstoneRepeaterBlockData::OPERATION_SWITCH_RECALCULATE));
+		$world->setExtraDataAt($this->position->x, $this->position->y, $this->position->z, new RedstoneRepeaterBlockData($powered ? RedstoneRepeaterBlockData::OPERATION_SWITCH_ON : RedstoneRepeaterBlockData::OPERATION_SWITCH_RECALCULATE));
 		$world->scheduleWaitableUpdate($this, RedstoneWorld::redstoneTicks($this->delay));
 	}
 
