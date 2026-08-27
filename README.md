@@ -9,12 +9,15 @@
 <div align="center">
  <a href="https://github.com/Cosmoverse/Redstone/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Cosmoverse/Redstone" alt="License"/></a>
  <a href=""><img src="https://img.shields.io/badge/php-8.4+-blue.svg" alt="PHP Version"/></a>
+ <a href="https://join.cosmicpe.me/cannon"><img src="https://img.shields.io/badge/Demo-cannon.cosmicpe.me-green" alt="Demo | cannon.cosmicpe.me"/></a>
 </div>
 
 ---
 
 This is a PocketMine-MP plugin that implements several Redstone mechanics. At present the priority is cannoning, so clocks, pistons, dispensers, and repeaters.
 Goal is Java 1.8 parity as that is what factions servers with cannoning usually run on. A player who raids boxes is more likely to know this setup than whatever the Bedrock devs at Mojang are presently cooking.
+
+A creative-mode server runs on [cannon.cosmicpe.me](https://join.cosmicpe.me/cannon). You get a private 640 by 640 plot that persists - use it to test the plugin.
 
 ## Installation
 Pre-compiled phar files are available in [releases page](https://github.com/Cosmoverse/Redstone/releases).
