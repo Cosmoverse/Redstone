@@ -138,8 +138,10 @@ class RedstoneWire extends VanillaRedstoneWire implements PowerSource, Transmitt
 		[$wires, $others] = $this->collectBreadthFirst($blocks);
 		foreach($wires as [$wire, $distance]){
 			assert($wire instanceof self);
-			$wire->signalStrength = 0;
-			$wire->position->world->setBlockAt($wire->position->x, $wire->position->y, $wire->position->z, $wire, false);
+			if($wire->signalStrength !== 0){
+				$wire->signalStrength = 0;
+				$wire->position->world->setBlockAt($wire->position->x, $wire->position->y, $wire->position->z, $wire, false);
+			}
 		}
 		$reverse = $diff < 0; // power reduced
 		do{
