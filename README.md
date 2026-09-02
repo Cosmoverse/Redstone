@@ -9,7 +9,7 @@
 <div align="center">
  <a href="https://github.com/Cosmoverse/Redstone/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Cosmoverse/Redstone" alt="License"/></a>
  <a href=""><img src="https://img.shields.io/badge/php-8.4+-blue.svg" alt="PHP Version"/></a>
- <a href="https://join.cosmicpe.me/cannon"><img src="https://img.shields.io/badge/Demo-cannon.cosmicpe.me-green" alt="Demo | cannon.cosmicpe.me"/></a>
+ <a href="https://join.cosmicpe.me/cannon"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fbadge.cosmicpe.dev%2Fcannon.cosmicpe.me%253A19132--Demo%2520server-v'version'-Demo%2520server-offline" alt="Demo | cannon.cosmicpe.me"/></a>
 </div>
 
 ---
