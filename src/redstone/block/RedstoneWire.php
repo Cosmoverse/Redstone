@@ -6,6 +6,7 @@ namespace redstone\block;
 
 use Generator;
 use pocketmine\block\Block;
+use pocketmine\block\Opaque;
 use pocketmine\block\RedstoneWire as VanillaRedstoneWire;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -248,7 +249,7 @@ class RedstoneWire extends VanillaRedstoneWire implements PowerSource, Transmitt
 		}
 		$above_transparent = HelperUtils::getBlockAtSide($this->position, Facing::UP)->isTransparent();
 		foreach($blocks as $side => $block){
-			if(!($block instanceof self) && $this->canStronglyPower($side)){
+			if($block instanceof Opaque && $this->canStronglyPower($side)){
 				$side_opposite = Facing::opposite($side);
 				foreach(Facing::ALL as $side2){
 					if($side2 === $side_opposite){
