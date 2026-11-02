@@ -20,11 +20,13 @@ use pocketmine\data\bedrock\block\convert\BlockStateDeserializerHelper as Helper
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
 use pocketmine\data\bedrock\block\convert\BlockStateSerializerHelper;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
+use pocketmine\data\bedrock\block\convert\property\ValueMappings;
 use pocketmine\data\bedrock\item\ItemTypeNames;
 use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
 use pocketmine\item\VanillaItems;
+use pocketmine\math\Facing;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
@@ -205,12 +207,22 @@ final class ExtraVanillaData{
 
 		self::unmapBlockSerializers(Ids::REDSTONE_WIRE, ExtraVanillaBlocks::REDSTONE_WIRE());
 		$deserializer->map(Ids::REDSTONE_WIRE, function(Reader $in) : Block{
+			$connections = ValueMappings::getInstance()->redstoneWireConnectionType;
 			return ExtraVanillaBlocks::REDSTONE_WIRE()
-				->setOutputSignalStrength($in->readBoundedInt(StateNames::REDSTONE_SIGNAL, 0, 15));
+				->setOutputSignalStrength($in->readBoundedInt(StateNames::REDSTONE_SIGNAL, 0, 15))
+				->setConnection(Facing::EAST, $connections->rawToValue($value = $in->readString(StateNames::REDSTONE_EAST)) ?? throw $in->badValueException(StateNames::REDSTONE_EAST, $value))
+				->setConnection(Facing::NORTH, $connections->rawToValue($value = $in->readString(StateNames::REDSTONE_NORTH)) ?? throw $in->badValueException(StateNames::REDSTONE_NORTH, $value))
+				->setConnection(Facing::SOUTH, $connections->rawToValue($value = $in->readString(StateNames::REDSTONE_SOUTH)) ?? throw $in->badValueException(StateNames::REDSTONE_SOUTH, $value))
+				->setConnection(Facing::WEST, $connections->rawToValue($value = $in->readString(StateNames::REDSTONE_WEST)) ?? throw $in->badValueException(StateNames::REDSTONE_WEST, $value));
 		});
 		$serializer->map(ExtraVanillaBlocks::REDSTONE_WIRE(), function(RedstoneWire $block) : Writer{
+			$connections = ValueMappings::getInstance()->redstoneWireConnectionType;
 			return Writer::create(Ids::REDSTONE_WIRE)
-				->writeInt(StateNames::REDSTONE_SIGNAL, $block->getOutputSignalStrength());
+				->writeInt(StateNames::REDSTONE_SIGNAL, $block->getOutputSignalStrength())
+				->writeString(StateNames::REDSTONE_EAST, $connections->valueToRaw($block->getConnection(Facing::EAST)))
+				->writeString(StateNames::REDSTONE_NORTH, $connections->valueToRaw($block->getConnection(Facing::NORTH)))
+				->writeString(StateNames::REDSTONE_SOUTH, $connections->valueToRaw($block->getConnection(Facing::SOUTH)))
+				->writeString(StateNames::REDSTONE_WEST, $connections->valueToRaw($block->getConnection(Facing::WEST)));
 		});
 
 		self::unmapBlockSerializers(Ids::LIT_REDSTONE_LAMP, ExtraVanillaBlocks::REDSTONE_LAMP());
