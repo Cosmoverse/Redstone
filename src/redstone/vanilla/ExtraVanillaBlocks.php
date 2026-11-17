@@ -17,6 +17,7 @@ use pocketmine\utils\CloningRegistryTrait;
 use redstone\block\CopperDoor;
 use redstone\block\Dispenser;
 use redstone\block\Door;
+use redstone\block\HoneyBlock;
 use redstone\block\Lever;
 use redstone\block\Piston;
 use redstone\block\PistonArmBlock;
@@ -49,6 +50,7 @@ use ReflectionProperty;
  * * @method static Piston PISTON()
  * * @method static Piston STICKY_PISTON()
  * * @method static Door IRON_DOOR()
+ * * @method static HoneyBlock HONEY_BLOCK()
  * * @method static RedstoneComparator REDSTONE_COMPARATOR()
  * * @method static RedstoneLamp REDSTONE_LAMP()
  * * @method static RedstoneRepeater REDSTONE_REPEATER()
@@ -135,6 +137,7 @@ final class ExtraVanillaBlocks{
 		self::register("piston_arm_block", new PistonArmBlock(new BID(Ids::newId()), "Piston Arm", new Info(new BreakInfo(0.5))));
 		self::register("piston", new Piston(new BID(Ids::newId(), PistonArm::class), "Piston", new Info(new BreakInfo(0.5)), false));
 		self::register("sticky_piston", new Piston(new BID(Ids::newId(), PistonArm::class), "Sticky Piston", new Info(new BreakInfo(0.5)), true));
+		self::register("honey_block", new HoneyBlock(new BID(Ids::newId()), "Honey Block", new Info(BreakInfo::instant())));
 
 		foreach(VanillaBlocks::getAll() as $identifier => $block){
 			if($block instanceof \pocketmine\block\RedstoneComparator){

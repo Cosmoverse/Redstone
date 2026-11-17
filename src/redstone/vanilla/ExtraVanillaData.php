@@ -81,6 +81,7 @@ final class ExtraVanillaData{
 		self::registerSimpleBlock(Ids::DARK_OAK_PRESSURE_PLATE, ExtraVanillaBlocks::DARK_OAK_PRESSURE_PLATE(), ["dark_oak_pressure_plate"], false);
 		self::registerSimpleBlock(Ids::DISPENSER, ExtraVanillaBlocks::DISPENSER(), ["dispenser"], false);
 		self::registerSimpleBlock(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, ExtraVanillaBlocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), ["heavy_weighted_pressure_plate"], false);
+		self::registerSimpleBlock(Ids::HONEY_BLOCK, ExtraVanillaBlocks::HONEY_BLOCK(), ["honey_block"]);
 		self::registerSimpleBlock(Ids::JUNGLE_BUTTON, ExtraVanillaBlocks::JUNGLE_BUTTON(), ["jungle_button"], false);
 		self::registerSimpleBlock(Ids::JUNGLE_PRESSURE_PLATE, ExtraVanillaBlocks::JUNGLE_PRESSURE_PLATE(), ["jungle_pressure_plate"], false);
 		self::registerSimpleBlock(Ids::LEVER, ExtraVanillaBlocks::LEVER(), ["lever"], false);
@@ -356,6 +357,7 @@ final class ExtraVanillaData{
 		self::map1to1Block(ItemTypeNames::REPEATER, ExtraVanillaBlocks::REDSTONE_REPEATER(), $parser->lookupBlockAliases(VanillaBlocks::REDSTONE_REPEATER()));
 		self::map1to1Block(Ids::PISTON, ExtraVanillaBlocks::PISTON(), []);
 		self::map1to1Block(Ids::STICKY_PISTON, ExtraVanillaBlocks::STICKY_PISTON(), []);
+		self::map1to1Block(Ids::HONEY_BLOCK, ExtraVanillaBlocks::HONEY_BLOCK(), []);
 
 		foreach([
 			[ItemTypeNames::IRON_DOOR, VanillaBlocks::IRON_DOOR(), ExtraVanillaBlocks::IRON_DOOR()],
