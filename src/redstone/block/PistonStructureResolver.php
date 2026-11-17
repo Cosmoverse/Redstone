@@ -80,7 +80,8 @@ final class PistonStructureResolver{
 	}
 
 	private static function hash(Block $block) : int{
-		return World::blockHash($block->position->x, $block->position->y, $block->position->z);
+		$pos = $block->getPosition();
+		return World::blockHash($pos->x, $pos->y, $pos->z);
 	}
 
 	private function isVacant(Block $block) : bool{
@@ -89,7 +90,7 @@ final class PistonStructureResolver{
 
 	private function canMove(Block $block) : bool{
 		// cached so BlockTeleportEvent fires once per block, branches tend to revisit the same spots
-		return $this->movable[self::hash($block)] ??= !($block instanceof PistonArmBlock) && ($this->can_move)($block, $block->position->getSide($this->direction));
+		return $this->movable[self::hash($block)] ??= !($block instanceof PistonArmBlock) && ($this->can_move)($block, $block->getPosition()->getSide($this->direction));
 	}
 
 	private function add(Block $block) : bool{
