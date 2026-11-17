@@ -17,6 +17,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\World;
 use redstone\block\power\Movable;
 use redstone\block\power\Powerable;
 use redstone\block\power\PowerableTrait;
@@ -34,6 +35,7 @@ use RuntimeException;
 use function abs;
 use function assert;
 use function count;
+use function usort;
 
 class Piston extends Transparent implements Powerable, Movable{
 	use OptimizedBlockTrait;
@@ -215,8 +217,22 @@ class Piston extends Transparent implements Powerable, Movable{
 		return !$ev->isCancelled();
 	}
 
+	/**
+	 * Sorts blocks so the ones furthest back along $direction come first. Moving them in reverse
+	 * means every block lands on a spot that's already been cleared.
+	 *
+	 * @param list<Block> $blocks
+	 * @return list<Block>
+	 */
+	private static function sortAlong(array $blocks, int $direction) : array{
+		$offset = Vector3::zero()->getSide($direction);
+		usort($blocks, static fn(Block $a, Block $b) : int => $a->position->dot($offset) <=> $b->position->dot($offset));
+		return $blocks;
+	}
+
 	private function pullBlocks() : bool{
 		$facing = $this->getSideFacing();
+		$direction = Facing::opposite($facing);
 		$block = $this->getSide($facing, 2);
 		$future_pos = $this->position->getSide($facing);
 		$future_block = $this->position->world->getBlockAt($future_pos->x, $future_pos->y, $future_pos->z);
@@ -224,7 +240,9 @@ class Piston extends Transparent implements Powerable, Movable{
 			return false;
 		}
 		$ev = new PistonPullBlockEvent($this, $block);
-		if(!$this->canBlockBeMoved($block, $future_pos)){
+		// the arm is about to vanish, so the resolver has to treat its spot as free
+		$blocks = (new PistonStructureResolver($this->position, $direction, $this->canBlockBeMoved(...), $future_pos))->resolve($block);
+		if($blocks === null || count($blocks) === 0){
 			$ev->cancel();
 		}
 		$ev->call();
@@ -232,27 +250,25 @@ class Piston extends Transparent implements Powerable, Movable{
 			return false;
 		}
 		$this->position->world->setBlockAt($future_pos->x, $future_pos->y, $future_pos->z, VanillaBlocks::AIR(), false);
-		HelperUtils::moveBlockAndTile($this->position->world, $block->position, $future_pos);
+		// a listener can uncancel the event, so blocks may still be null here
+		foreach(HelperUtils::reverse(self::sortAlong($blocks ?? [], $direction)) as $moving){
+			HelperUtils::moveBlockAndTile($this->position->world, $moving->position, $moving->position->getSide($direction));
+		}
 		return true;
 	}
 
 	private function pushBlocks() : bool{
-		$movements = [];
 		$facing = $this->getSideFacing();
-		for($i = 0; $i <= self::PUSH_DISTANCE; $i++){
-			$block = $this->getSide($facing, 1 + $i);
-			if($block->canBeReplaced() || $block->canBeFlowedInto()){
-				break;
-			}
-			if($i === self::PUSH_DISTANCE){
-				return false;
-			}
-			$future_pos = $block->position->getSide($facing);
-			if($block instanceof PistonArmBlock || !$this->canBlockBeMoved($block, $future_pos)){
-				return false;
-			}
+		$blocks = (new PistonStructureResolver($this->position, $facing, $this->canBlockBeMoved(...)))->resolve($this->getSide($facing));
+		if($blocks === null){
+			return false;
+		}
+		$movements = [];
+		$moving = [];
+		foreach(self::sortAlong($blocks, $facing) as $block){
 			$tile = $block->position->world->getTile($block->position);
-			$movements[] = new PistonMoveInfo($block, $tile, $block->position, $future_pos);
+			$movements[] = new PistonMoveInfo($block, $tile, $block->position, $block->position->getSide($facing));
+			$moving[World::blockHash($block->position->x, $block->position->y, $block->position->z)] = true;
 		}
 		$arm_pos = $this->position->getSide($facing);
 		$ev = new PistonPushBlockEvent($this, $arm_pos, $movements);
@@ -260,7 +276,12 @@ class Piston extends Transparent implements Powerable, Movable{
 		if($ev->isCancelled()){
 			return false;
 		}
-		$this->pushEntities(count($movements));
+		// hmm, entities only get shoved by the straight line in front of the arm, not by blocks slime drags along the sides
+		$line = 0;
+		for($pos = $arm_pos; isset($moving[World::blockHash($pos->x, $pos->y, $pos->z)]); $pos = $pos->getSide($facing)){
+			++$line;
+		}
+		$this->pushEntities($line);
 		foreach(HelperUtils::reverse($movements) as $movement){
 			HelperUtils::moveBlockAndTile($this->position->world, $movement->from, $movement->to);
 		}
